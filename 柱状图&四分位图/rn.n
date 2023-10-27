@@ -1,0 +1,35 @@
+
+
+
+library(dplyr)
+library(ggplot2)
+
+
+file_list <- list.files("C:/Users/0.0/Desktop/2_hmc_csv", pattern = "*.csv", full.names = TRUE)
+
+file_list=c("C:/Users/0.0/Desktop/2_hmc_csv/CGS-13.5.ref_nochrm.CpG.bed.hmc.csv", "C:/Users/0.0/Desktop/2_hmc_csv/CGS-E15.5.ref_nochrm.CpG.bed.hmc.csv" ,"C:/Users/0.0/Desktop/2_hmc_csv/CGS-18.5.ref_nochrm.CpG.bed.hmc.csv" ,
+             "C:/Users/0.0/Desktop/2_hmc_csv/cgs-1w-2.ref_nochrm.CpG.bed.hmc.csv" , "C:/Users/0.0/Desktop/2_hmc_csv/CGS-2w.ref_nochrm.CpG.bed.hmc.csv"  ,
+            "C:/Users/0.0/Desktop/2_hmc_csv/CGS-4w-1.ref_nochrm.CpG.bed.hmc.csv" )
+
+
+
+all_data <- lapply(file_list, function(file_path) {
+  data <- read.csv(file_path)
+  exp_name <- tools::file_path_sans_ext(basename(file_path)) # 使用文件名作为实验名称
+  data$element <- exp_name
+  return(data)
+}) %>% bind_rows()
+
+
+all_data$exp=1
+# all_data$level=all_data$level*100
+
+
+
+
+p <- ggplot(all_data, aes(x=element, y=level, fill=exp)) +
+  geom_boxplot(position="dodge", width=0.7, outlier.shape=NA) +
+  theme_bw() +
+  theme(axis.text.x=element_text(angle=50, size=8, vjust=0.5)) +
+  theme(aspect.ratio=1) +
+  coord_cartesian(ylim = c(0, 0.15))
